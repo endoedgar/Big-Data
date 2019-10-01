@@ -1,28 +1,27 @@
-
-public class KeyValuePair<T, I> {
-	private T t;
-	private I i;
+public class KeyValuePair<K extends Comparable<?>, V extends Comparable<?>> {
+	private K key;
+	private V value;
 	
-	public T getT() {
-		return t;
+	public K getKey() {
+		return key;
 	}
-	public void setT(T t) {
-		this.t = t;
+	public void setKey(K key) {
+		this.key = key;
 	}
-	public I getI() {
-		return i;
+	public V getValue() {
+		return value;
 	}
-	public void setI(I i) {
-		this.i = i;
+	public void setValue(V value) {
+		this.value = value;
 	}
-	public KeyValuePair(T t, I i) {
+	public KeyValuePair(K key, V value) {
 		super();
-		this.t = t;
-		this.i = i;
+		this.key = key;
+		this.value = value;
 	}
 	@Override
 	public String toString() {
-		return "(" + t + ", " + i + ")";
+		return "(" + key + ", " + value + ")";
 	}
 	
 }
