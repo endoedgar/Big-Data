@@ -24,12 +24,8 @@ public class Main {
 		}
 		return result;
 	}
-	public static List<KeyValuePair<String, Integer>> extractListOfWordsFromFile(String filepath) {
-		List<KeyValuePair<String, Integer>> strings = splitFileIntoListStrings(filepath);
-		return strings;
-	}
 	public static void main(String[] args) {
-		List<KeyValuePair<String, Integer>> strings = extractListOfWordsFromFile("test.txt");
+		List<KeyValuePair<String, Integer>> strings = splitFileIntoListStrings("test.txt");
 		strings.stream().forEach(System.out::println);
 	}
 }
