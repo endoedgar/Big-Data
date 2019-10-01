@@ -2,7 +2,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -35,6 +39,22 @@ public class WordCount {
 		this.r = r;
 		this.m = m;
 	}
+	
+	public Map<Integer, List<KeyValuePair<String, ?>>> shuffleAndSort(List<KeyValuePair<String, ?>> mapperOutput) {
+		return mapperOutput.stream()
+		.sorted(Comparator.comparing(KeyValuePair::getKey))
+		.collect(Collectors.groupingBy(pair -> getPartition(pair.getKey())));
+		
+		/*List<List<KeyValuePair<String, Integer>>> list = new ArrayList<List<KeyValuePair<String, Integer>>>(this.r);
+		for(KeyValuePair<String, Integer> pair : mapperOutput) {
+			int reducerIndex = this.getPartition(pair.getKey());
+			if(list.get(reducerIndex) == null)
+				list.set(reducerIndex, new ArrayList<KeyValuePair<String,Integer>>());
+			list.get(reducerIndex).add(pair);
+		}
+		
+		return list;*/
+	}
 
 	public List<KeyValuePair<String, Integer>> splitFileIntoListStrings(String filepath) {
 		List<KeyValuePair<String, Integer>> result = new ArrayList<KeyValuePair<String, Integer>>();
@@ -42,6 +62,7 @@ public class WordCount {
 			List<String> lines = stream.collect(Collectors.toList());
 			int inputStripSize = (int)(lines.size()/m);
 			List<MyMapper> mappers = new ArrayList<MyMapper>();
+			
 			for(int i = 0; i < m; ++i) {
 				List<String> input = lines.subList(i*inputStripSize, i*inputStripSize+inputStripSize);
 				System.out.println("Mapper " +i+ " Input");
@@ -52,13 +73,25 @@ public class WordCount {
 			}
 			
 			for(MyMapper m : mappers) {
-				List<KeyValuePair<String, Integer>> output = m.map();
+				m.map();
 				
 				System.out.println("Mapper " +m.getId()+ " Output");
 				
-				output.forEach(System.out::println);
+				m.getOutput().forEach(System.out::println);
 			}
 			
+			for(MyMapper m : mappers) {
+				Map<Integer, List<KeyValuePair<String, ?>>> resu = shuffleAndSort(m.getOutput());
+				
+				IntStream.range(0, r).boxed()
+				.forEach(
+					pairIndex -> { 
+						System.out.println("Pairs send from Mapper " +m.getId()+ " Reducer "+pairIndex);
+						if(resu.containsKey(pairIndex))
+							resu.get(pairIndex).forEach((v) -> System.out.println(v));
+					}
+				);
+			}
 			/*System.out.println("Mapper Output");
 		    List<KeyValuePair<String, Integer>> mapperOutput = MyMapper.map(stream);
 		    mapperOutput.forEach(System.out::println);
