@@ -1,3 +1,4 @@
+package net.endoedgar;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;

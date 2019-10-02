@@ -1,3 +1,4 @@
+package net.endoedgar;
 public class KeyValuePair<K extends Comparable<?>, V extends Comparable<?>> {
 	private K key;
 	private V value;

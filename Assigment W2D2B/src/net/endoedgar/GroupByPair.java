@@ -1,3 +1,4 @@
+package net.endoedgar;
 import java.util.List;
 
 public class GroupByPair<K,V> {
