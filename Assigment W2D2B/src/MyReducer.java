@@ -41,7 +41,8 @@ public class MyReducer {
 				.sorted((e1,e2) -> e1.getKey().compareTo(e2.getKey()))
 				.collect(Collectors.toList());
 	}
-	public static List<GroupByPair<String, Integer>> reduceToGroupPair(List<KeyValuePair<String, Integer>> input) {
+	
+	private static List<GroupByPair<String, Integer>> reduceToGroupPair(List<KeyValuePair<String, Integer>> input) {
 		return input.stream().collect(
 				Collectors.groupingBy(KeyValuePair::getKey)).entrySet().stream()
 				.map(pair -> 
@@ -55,8 +56,8 @@ public class MyReducer {
 							.collect(Collectors.toList());
 	}
 	
-	static List<KeyValuePair<String, Integer>> reduceGroupPairToSummedGroupPair(Stream<GroupByPair<String, Integer>> input) {
-		return input.map(o -> new KeyValuePair<String, Integer>(
+	private static List<KeyValuePair<String, Integer>> reduceGroupPairToSummedGroupPair(List<GroupByPair<String, Integer>> input) {
+		return input.stream().map(o -> new KeyValuePair<String, Integer>(
 				o.getKey(), 
 				o.getList().stream()
 				.collect(Collectors.summingInt(Integer::intValue))))
@@ -65,5 +66,9 @@ public class MyReducer {
 	public MyReducer(int id) {
 		super();
 		this.id = id;
+	}
+	
+	public void reduce() {
+		this.output = reduceGroupPairToSummedGroupPair(input);
 	}
 }

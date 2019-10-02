@@ -46,6 +46,7 @@ public class WordCount {
 		try (Stream<String> stream = Files.lines(Paths.get(filepath))) {			
 			List<String> lines = stream.collect(Collectors.toList());
 			int inputStripSize = (int)(lines.size()/m);
+			
 			List<MyMapper> mappers = new ArrayList<MyMapper>();
 			List<MyReducer> reducers = new ArrayList<MyReducer>();
 			
@@ -88,6 +89,12 @@ public class WordCount {
 			for(MyReducer reducer : reducers) {
 				System.out.println("Reducer " +reducer.getId()+ " Input	");
 				reducer.getInput().forEach(System.out::println);
+			}
+			
+			for(MyReducer reducer : reducers) {
+				reducer.reduce();
+				System.out.println("Reducer " +reducer.getId()+ " Output	");
+				reducer.getOutput().forEach(System.out::println);
 			}
 		} catch (IOException fnfe) {
 		    fnfe.printStackTrace();
