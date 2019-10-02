@@ -62,6 +62,7 @@ public class WordCount {
 			for(int i = 0; i < m; ++i) { mappers.add(new MyMapper(i)); }
 			for(int i = 0; i < r; ++i) { reducers.add(new MyReducer(i)); }
 			
+			// input splits for each mapper
 			for(Mapper m : mappers) {
 				List<String> input = lines.subList(m.getId()*inputStripSize, m.getId()*inputStripSize+inputStripSize);
 				System.out.println("Mapper " +m.getId()+ " Input");
@@ -76,6 +77,7 @@ public class WordCount {
 				m.getOutput().forEach(System.out::println);
 			}
 			
+			// SS
 			for(Mapper m : mappers) {
 				Map<Integer, List<KeyValuePair<String, Integer>>> resu = shuffleAndSort(m.getOutput());
 				
@@ -91,11 +93,13 @@ public class WordCount {
 				resu.forEach((k,v) -> reducers.get(k).receiveFromMapper(v));
 			}
 			
+			// Show each Reducer Input
 			for(Reducer reducer : reducers) {
 				System.out.println("Reducer " +reducer.getId()+ " Input	");
 				reducer.getInput().forEach(System.out::println);
 			}
 			
+			// Show each Reducer Output
 			for(Reducer reducer : reducers) {
 				reducer.reduce();
 				System.out.println("Reducer " +reducer.getId()+ " Output	");
