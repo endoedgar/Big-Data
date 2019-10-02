@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 
 public class MyReducer {
-	private List<GroupByPair<String, List<Integer>>> input = new ArrayList<GroupByPair<String, List<Integer>>>();
+	private List<GroupByPair<String, Integer>> input = new ArrayList<GroupByPair<String, Integer>>();
 	private List<KeyValuePair<String, Integer>> output;
 	private int id;
 	
@@ -15,10 +15,10 @@ public class MyReducer {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public List<GroupByPair<String, List<Integer>>> getInput() {
+	public List<GroupByPair<String, Integer>> getInput() {
 		return input;
 	}
-	public void setInput(List<GroupByPair<String, List<Integer>>> input) {
+	public void setInput(List<GroupByPair<String, Integer>> input) {
 		this.input = input;
 	}
 	public List<KeyValuePair<String, Integer>> getOutput() {
@@ -28,7 +28,7 @@ public class MyReducer {
 		this.output = output;
 	}
 	public void receiveFromMapper(List<KeyValuePair<String, Integer>> mapperOutput) {
-		List<GroupByPair<String, List<Integer>>> addedList = MyReducer.reduceToGroupPair(mapperOutput);
+		List<GroupByPair<String, Integer>> addedList = MyReducer.reduceToGroupPair(mapperOutput);
 		this.input = Stream.concat(input.stream(), addedList.stream())
 				.collect(
 						Collectors.groupingBy(
@@ -37,15 +37,15 @@ public class MyReducer {
 								
 						)
 				).entrySet().stream()
-				.map(e -> new GroupByPair<String, List<Integer>>(e.getKey(), e.getValue()))
+				.map(e -> new GroupByPair<String, Integer>(e.getKey(), e.getValue()))
 				.sorted((e1,e2) -> e1.getKey().compareTo(e2.getKey()))
 				.collect(Collectors.toList());
 	}
-	public static List<GroupByPair<String, List<Integer>>> reduceToGroupPair(List<KeyValuePair<String, Integer>> input) {
+	public static List<GroupByPair<String, Integer>> reduceToGroupPair(List<KeyValuePair<String, Integer>> input) {
 		return input.stream().collect(
 				Collectors.groupingBy(KeyValuePair::getKey)).entrySet().stream()
 				.map(pair -> 
-					new GroupByPair<String, List<Integer>>(
+					new GroupByPair<String, Integer>(
 							pair.getKey(), 
 							pair.getValue()
 							.stream()
@@ -55,7 +55,7 @@ public class MyReducer {
 							.collect(Collectors.toList());
 	}
 	
-	static List<KeyValuePair<String, Integer>> reduceGroupPairToSummedGroupPair(Stream<GroupByPair<String, List<Integer>>> input) {
+	static List<KeyValuePair<String, Integer>> reduceGroupPairToSummedGroupPair(Stream<GroupByPair<String, Integer>> input) {
 		return input.map(o -> new KeyValuePair<String, Integer>(
 				o.getKey(), 
 				o.getList().stream()
@@ -66,6 +66,4 @@ public class MyReducer {
 		super();
 		this.id = id;
 	}
-	
-	
 }

@@ -1,8 +1,8 @@
 import java.util.List;
 
-public class GroupByPair<K,V extends List<?>> {
+public class GroupByPair<K,V> {
 	private K key;
-	private V list;
+	private List<V> list;
 	
 	public K getKey() {
 		return key;
@@ -10,13 +10,13 @@ public class GroupByPair<K,V extends List<?>> {
 	public void setKey(K key) {
 		this.key = key;
 	}
-	public V getList() {
+	public List<V> getList() {
 		return list;
 	}
-	public void setList(V list) {
+	public void setList(List<V> list) {
 		this.list = list;
 	}
-	public GroupByPair(K key, V list) {
+	public GroupByPair(K key, List<V> list) {
 		super();
 		this.key = key;
 		this.list = list;
