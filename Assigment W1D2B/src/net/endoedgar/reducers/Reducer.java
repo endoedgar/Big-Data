@@ -10,10 +10,10 @@ public interface Reducer<K extends Comparable<?>,V extends Comparable<?>> {
 	
 	public void setInput(List<GroupByPair<K, V>> input);
 	public List<GroupByPair<K, V>> getInput();
-	
+	public void emit(K key, V value);
+	public void emit(KeyValuePair<K, V> kv);
 	public List<KeyValuePair<K, V>> getOutput();
-	public void setOutput(List<KeyValuePair<K, V>> output);
 	
 	public void receiveFromMapper(List<KeyValuePair<K, V>> mapperOutput);
-	public List<KeyValuePair<K, V>> reduce();
+	public void reduce();
 }
