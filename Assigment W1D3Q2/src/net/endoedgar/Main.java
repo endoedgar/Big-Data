@@ -1,7 +1,10 @@
 package net.endoedgar;
+
+import java.util.Arrays;
+
 public class Main {
 	public static void main(String[] args) {
-		WordCount wc = new WordCount(4, 3);
-		wc.process("test.txt");
+		AverageLengthWord wc = new AverageLengthWord(Arrays.asList("File1.txt", "File2.txt", "File3.txt", "File4.txt"), 3);
+		wc.process();
 	}
 }

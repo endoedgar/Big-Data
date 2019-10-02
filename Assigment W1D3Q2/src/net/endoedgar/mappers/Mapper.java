@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.endoedgar.primitives.KeyValuePair;
 
-public interface Mapper<I extends Comparable<?>, O extends Comparable<?>> {
+public interface Mapper<I extends Comparable<?>, O> {
 	public int getId();
 	public void initialize();
 	public void close();
