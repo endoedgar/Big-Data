@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public class MyReducer {
+public class MyReducer implements Reducer<String, Integer> {
 	private List<GroupByPair<String, Integer>> input = new ArrayList<GroupByPair<String, Integer>>();
 	private List<KeyValuePair<String, Integer>> output;
 	private int id;
@@ -69,7 +69,8 @@ public class MyReducer {
 		this.id = id;
 	}
 	
-	public void reduce() {
+	public List<KeyValuePair<String, Integer>> reduce() {
 		this.output = reduceGroupPairToSummedGroupPair(input);
+		return this.output;
 	}
 }

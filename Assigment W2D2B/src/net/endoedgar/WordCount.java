@@ -42,14 +42,15 @@ public class WordCount {
 		.collect(Collectors.groupingBy(pair -> getPartition(pair.getKey())));
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<KeyValuePair<String, Integer>> splitFileIntoListStrings(String filepath) {
 		List<KeyValuePair<String, Integer>> result = new ArrayList<KeyValuePair<String, Integer>>();
 		try (Stream<String> stream = Files.lines(Paths.get(filepath))) {			
 			List<String> lines = stream.collect(Collectors.toList());
 			int inputStripSize = (int)(lines.size()/m);
 			
-			List<MyMapper> mappers = new ArrayList<MyMapper>();
-			List<MyReducer> reducers = new ArrayList<MyReducer>();
+			List<Mapper> mappers = new ArrayList<Mapper>();
+			List<Reducer> reducers = new ArrayList<Reducer>();
 			
 			for(int i = 0; i < m; ++i) {
 				List<String> input = lines.subList(i*inputStripSize, i*inputStripSize+inputStripSize);
@@ -64,7 +65,7 @@ public class WordCount {
 				reducers.add(new MyReducer(i));
 			}
 			
-			for(MyMapper m : mappers) {
+			for(Mapper m : mappers) {
 				m.map();
 				
 				System.out.println("Mapper " +m.getId()+ " Output");
@@ -72,7 +73,7 @@ public class WordCount {
 				m.getOutput().forEach(System.out::println);
 			}
 			
-			for(MyMapper m : mappers) {
+			for(Mapper m : mappers) {
 				Map<Integer, List<KeyValuePair<String, Integer>>> resu = shuffleAndSort(m.getOutput());
 				
 				IntStream.range(0, r).boxed()
@@ -87,12 +88,12 @@ public class WordCount {
 				resu.forEach((k,v) -> reducers.get(k).receiveFromMapper(v));
 			}
 			
-			for(MyReducer reducer : reducers) {
+			for(Reducer reducer : reducers) {
 				System.out.println("Reducer " +reducer.getId()+ " Input	");
 				reducer.getInput().forEach(System.out::println);
 			}
 			
-			for(MyReducer reducer : reducers) {
+			for(Reducer reducer : reducers) {
 				reducer.reduce();
 				System.out.println("Reducer " +reducer.getId()+ " Output	");
 				reducer.getOutput().forEach(System.out::println);

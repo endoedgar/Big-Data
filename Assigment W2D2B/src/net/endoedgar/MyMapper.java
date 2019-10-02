@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class MyMapper {
+public class MyMapper implements Mapper<String, Integer> {
 	private int id;
 	private List<String> input;
 	private List<KeyValuePair<String, Integer>> output;
