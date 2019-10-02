@@ -23,5 +23,4 @@ public class KeyValuePair<K extends Comparable<?>, V extends Comparable<?>> {
 	public String toString() {
 		return "< " + key + " , " + value + " >";
 	}
-	
 }

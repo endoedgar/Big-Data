@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 public class MyMapper {
 	private int id;
 	private List<String> input;
-	private List<KeyValuePair<String, ?>> output;
+	private List<KeyValuePair<String, Integer>> output;
 	
 	public MyMapper(int id, List<String> input) {
 		super();
@@ -25,7 +25,7 @@ public class MyMapper {
 		return input;
 	}
 	
-	public List<KeyValuePair<String, ?>> getOutput() {
+	public List<KeyValuePair<String, Integer>> getOutput() {
 		return output;
 	}
 
@@ -33,7 +33,7 @@ public class MyMapper {
 		this.input = input;
 	}
 
-	public List<KeyValuePair<String, ?>> map() {
+	public List<KeyValuePair<String, Integer>> map() {
 		this.output = input.stream().flatMap(line -> Pattern.compile("[\" '\\-]|\\.$|\\. ").splitAsStream(line))
 		.filter(Pattern.compile("^[a-zA-Z]+$").asPredicate())
 		.map(o -> new KeyValuePair<String, Integer>(o.toLowerCase(),1))

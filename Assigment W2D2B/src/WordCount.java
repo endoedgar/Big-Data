@@ -3,13 +3,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class WordCount {
@@ -31,8 +28,6 @@ public class WordCount {
 	public void setM(int m) {
 		this.m = m;
 	}
-	
-	
 
 	public WordCount(int r, int m) {
 		super();
@@ -40,20 +35,10 @@ public class WordCount {
 		this.m = m;
 	}
 	
-	public Map<Integer, List<KeyValuePair<String, ?>>> shuffleAndSort(List<KeyValuePair<String, ?>> mapperOutput) {
+	public Map<Integer, List<KeyValuePair<String, Integer>>> shuffleAndSort(List<KeyValuePair<String, Integer>> mapperOutput) {
 		return mapperOutput.stream()
 		.sorted(Comparator.comparing(KeyValuePair::getKey))
 		.collect(Collectors.groupingBy(pair -> getPartition(pair.getKey())));
-		
-		/*List<List<KeyValuePair<String, Integer>>> list = new ArrayList<List<KeyValuePair<String, Integer>>>(this.r);
-		for(KeyValuePair<String, Integer> pair : mapperOutput) {
-			int reducerIndex = this.getPartition(pair.getKey());
-			if(list.get(reducerIndex) == null)
-				list.set(reducerIndex, new ArrayList<KeyValuePair<String,Integer>>());
-			list.get(reducerIndex).add(pair);
-		}
-		
-		return list;*/
 	}
 
 	public List<KeyValuePair<String, Integer>> splitFileIntoListStrings(String filepath) {
@@ -62,6 +47,7 @@ public class WordCount {
 			List<String> lines = stream.collect(Collectors.toList());
 			int inputStripSize = (int)(lines.size()/m);
 			List<MyMapper> mappers = new ArrayList<MyMapper>();
+			List<MyReducer> reducers = new ArrayList<MyReducer>();
 			
 			for(int i = 0; i < m; ++i) {
 				List<String> input = lines.subList(i*inputStripSize, i*inputStripSize+inputStripSize);
@@ -70,6 +56,10 @@ public class WordCount {
 				input.forEach(System.out::println);
 				
 				mappers.add(new MyMapper(i, input));
+			}
+			
+			for(int i = 0; i < r; ++i) {
+				reducers.add(new MyReducer(i));
 			}
 			
 			for(MyMapper m : mappers) {
@@ -81,7 +71,7 @@ public class WordCount {
 			}
 			
 			for(MyMapper m : mappers) {
-				Map<Integer, List<KeyValuePair<String, ?>>> resu = shuffleAndSort(m.getOutput());
+				Map<Integer, List<KeyValuePair<String, Integer>>> resu = shuffleAndSort(m.getOutput());
 				
 				IntStream.range(0, r).boxed()
 				.forEach(
@@ -91,18 +81,14 @@ public class WordCount {
 							resu.get(pairIndex).forEach((v) -> System.out.println(v));
 					}
 				);
+				
+				resu.forEach((k,v) -> reducers.get(k).receiveFromMapper(v));
 			}
-			/*System.out.println("Mapper Output");
-		    List<KeyValuePair<String, Integer>> mapperOutput = MyMapper.map(stream);
-		    mapperOutput.forEach(System.out::println);
-
-		    List<GroupByPair<String, List<Integer>>> reducerInput = MyReducer.reduceToGroupPair(mapperOutput.stream());
-		    System.out.println("Reducer Input");
-		    reducerInput.forEach(System.out::println);
-		    
-		    List<KeyValuePair<String, Integer>> reducerOutput = MyReducer.reduceGroupPairToSummedGroupPair(reducerInput.stream());
-		    System.out.println("Reducer Ouput");
-		    reducerOutput.forEach(System.out::println);*/
+			
+			for(MyReducer reducer : reducers) {
+				System.out.println("Reducer " +reducer.getId()+ " Input	");
+				reducer.getInput().forEach(System.out::println);
+			}
 		} catch (IOException fnfe) {
 		    fnfe.printStackTrace();
 		}
