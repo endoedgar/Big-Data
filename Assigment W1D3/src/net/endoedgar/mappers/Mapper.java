@@ -9,6 +9,7 @@ public interface Mapper<I extends Comparable<?>, O extends Comparable<?>> {
 	public void initialize();
 	public void close();
 	public void setInput(List<I> input);
+	public List<I> getInput();
 	public void emit(I key, O value);
 	public void emit(KeyValuePair<I, O> kv);
 	public void map();
