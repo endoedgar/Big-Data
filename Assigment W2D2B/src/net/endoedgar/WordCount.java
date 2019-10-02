@@ -10,6 +10,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import net.endoedgar.mappers.Mapper;
+import net.endoedgar.mappers.MyMapper;
+import net.endoedgar.primitives.KeyValuePair;
+import net.endoedgar.reducers.MyReducer;
+import net.endoedgar.reducers.Reducer;
+
 public class WordCount {
 	private int r;
 	private int m;
@@ -43,29 +49,26 @@ public class WordCount {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<KeyValuePair<String, Integer>> splitFileIntoListStrings(String filepath) {
-		List<KeyValuePair<String, Integer>> result = new ArrayList<KeyValuePair<String, Integer>>();
-		try (Stream<String> stream = Files.lines(Paths.get(filepath))) {			
+	public void process(String filepath) {
+		System.out.println("Number of Input-Splits: " + m);
+		System.out.println("Number of Reducers: " + r);
+		try (Stream<String> stream = Files.lines(Paths.get(filepath))) {		
 			List<String> lines = stream.collect(Collectors.toList());
 			int inputStripSize = (int)(lines.size()/m);
 			
 			List<Mapper> mappers = new ArrayList<Mapper>();
 			List<Reducer> reducers = new ArrayList<Reducer>();
 			
-			for(int i = 0; i < m; ++i) {
-				List<String> input = lines.subList(i*inputStripSize, i*inputStripSize+inputStripSize);
-				System.out.println("Mapper " +i+ " Input");
-				
-				input.forEach(System.out::println);
-				
-				mappers.add(new MyMapper(i, input));
-			}
-			
-			for(int i = 0; i < r; ++i) {
-				reducers.add(new MyReducer(i));
-			}
+			for(int i = 0; i < m; ++i) { mappers.add(new MyMapper(i)); }
+			for(int i = 0; i < r; ++i) { reducers.add(new MyReducer(i)); }
 			
 			for(Mapper m : mappers) {
+				List<String> input = lines.subList(m.getId()*inputStripSize, m.getId()*inputStripSize+inputStripSize);
+				System.out.println("Mapper " +m.getId()+ " Input");
+				input.forEach(System.out::println);
+				
+				m.setInput(input);
+				
 				m.map();
 				
 				System.out.println("Mapper " +m.getId()+ " Output");
@@ -101,7 +104,6 @@ public class WordCount {
 		} catch (IOException fnfe) {
 		    fnfe.printStackTrace();
 		}
-		return result;
 	}
 	
 	public int getPartition(String key) {

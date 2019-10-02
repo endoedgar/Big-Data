@@ -1,7 +1,7 @@
-package net.endoedgar;
+package net.endoedgar.primitives;
 import java.util.List;
 
-public class GroupByPair<K,V> {
+public class GroupByPair<K extends Comparable<?>,V> {
 	private K key;
 	private List<V> list;
 	
