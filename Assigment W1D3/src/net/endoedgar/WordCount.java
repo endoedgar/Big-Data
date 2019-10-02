@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,51 +15,25 @@ import net.endoedgar.primitives.KeyValuePair;
 import net.endoedgar.reducers.MyReducer;
 import net.endoedgar.reducers.Reducer;
 
-public class WordCount {
-	private int r;
-	private int m;
-	
-	public int getR() {
-		return r;
-	}
-
-	public void setR(int r) {
-		this.r = r;
-	}
-
-	public int getM() {
-		return m;
-	}
-
-	public void setM(int m) {
-		this.m = m;
-	}
+public class WordCount extends BasicHadoopImplementation {
 
 	public WordCount(int r, int m) {
-		super();
-		this.r = r;
-		this.m = m;
-	}
-	
-	public Map<Integer, List<KeyValuePair<String, Integer>>> shuffleAndSort(List<KeyValuePair<String, Integer>> mapperOutput) {
-		return mapperOutput.stream()
-		.sorted(Comparator.comparing(KeyValuePair::getKey))
-		.collect(Collectors.groupingBy(pair -> getPartition(pair.getKey())));
+		super(r, m);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void process(String filepath) {
-		System.out.println("Number of Input-Splits: " + m);
-		System.out.println("Number of Reducers: " + r);
+		System.out.println("Number of Input-Splits: " + this.getM());
+		System.out.println("Number of Reducers: " + this.getR());
 		try (Stream<String> stream = Files.lines(Paths.get(filepath))) {		
 			List<String> lines = stream.collect(Collectors.toList());
-			int inputStripSize = (int)(lines.size()/m);
+			int inputStripSize = (int)(lines.size()/this.getM());
 			
 			List<Mapper> mappers = new ArrayList<Mapper>();
 			List<Reducer> reducers = new ArrayList<Reducer>();
 			
-			for(int i = 0; i < m; ++i) { mappers.add(new MyMapper(i)); }
-			for(int i = 0; i < r; ++i) { reducers.add(new MyReducer(i)); }
+			for(int i = 0; i < this.getM(); ++i) { mappers.add(new MyMapper(i)); }
+			for(int i = 0; i < this.getR(); ++i) { reducers.add(new MyReducer(i)); }
 			
 			// input splits for each mapper
 			for(Mapper m : mappers) {
@@ -81,7 +54,7 @@ public class WordCount {
 			for(Mapper m : mappers) {
 				Map<Integer, List<KeyValuePair<String, Integer>>> resu = shuffleAndSort(m.getOutput());
 				
-				IntStream.range(0, r).boxed()
+				IntStream.range(0, this.getR()).boxed()
 				.forEach(
 					pairIndex -> { 
 						System.out.println("Pairs send from Mapper " +m.getId()+ " Reducer "+pairIndex);
@@ -110,7 +83,5 @@ public class WordCount {
 		}
 	}
 	
-	public int getPartition(String key) {
-		return (int) Math.abs(key.hashCode()) % r;
-	}
+
 }
