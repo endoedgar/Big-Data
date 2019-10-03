@@ -20,7 +20,7 @@ public class AverageLengthWord extends BasicHadoopImplementation<String, List<In
 	public void process() {
 		System.out.println("Number of Input-Splits: " + this.getM());
 		System.out.println("Number of Reducers: " + this.getR());
-		this.setupMappersAndReducers(i -> new MyMapper((int) i), i -> new MyReducer((int) i));
+		this.setupMappersAndReducers(MyMapper::new, MyReducer::new);
 		for(int i = 0; i < this.getM(); ++i) {
 			try (Stream<String> list = Files.lines(Paths.get(files.get(i)))) {
 				this.getMappers().get(i).setInput(list.collect(Collectors.toList()));
@@ -30,6 +30,4 @@ public class AverageLengthWord extends BasicHadoopImplementation<String, List<In
 		}
 		this.mapAndReduceProcess();
 	}
-	
-
 }

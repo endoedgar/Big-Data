@@ -15,7 +15,7 @@ public abstract class BasicReducer<K extends Comparable<K>,V, O> implements Redu
 	
 	public void receiveFromMapper(List<KeyValuePair<K, V>> mapperOutput) {
 		List<GroupByPair<K, V>> addedList = this.reduceToGroupPair(mapperOutput);
-		this.setInput(
+		this.input = 
 				Stream.concat(this.getInput().stream(), addedList.stream())
 				.collect(
 						Collectors.groupingBy(
@@ -26,7 +26,7 @@ public abstract class BasicReducer<K extends Comparable<K>,V, O> implements Redu
 				).entrySet().stream()
 				.map(e -> new GroupByPair<K, V>(e.getKey(), e.getValue()))
 				.sorted((e1,e2) -> e1.getKey().compareTo(e2.getKey()))
-				.collect(Collectors.toList()));
+				.collect(Collectors.toList());
 	}
 	
 	private List<GroupByPair<K, V>> reduceToGroupPair(List<KeyValuePair<K, V>> input) {
@@ -50,7 +50,6 @@ public abstract class BasicReducer<K extends Comparable<K>,V, O> implements Redu
 	public int getId() { return id; }
 	public void setId(int id) { this.id = id; }
 	public List<GroupByPair<K, V>> getInput() { return input; }
-	public void setInput(List<GroupByPair<K, V>> input) { this.input = input; }
 	public List<KeyValuePair<K, O>> getOutput() { return output; }
 	public BasicReducer(int id) { super(); this.input = new ArrayList<GroupByPair<K, V>>(); this.output = new ArrayList<KeyValuePair<K, O>>(); this.id = id; }
 }

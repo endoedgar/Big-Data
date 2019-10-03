@@ -9,13 +9,11 @@ import java.util.regex.Pattern;
 public class MyMapper extends BasicMapper<String, List<Integer>> {
 	public Map<String, List<Integer>> h;
 	
-	public MyMapper(int id) {
-		super(id);
-	}
 	@Override
 	public void initialize() {
 		h = new HashMap<String, List<Integer>>();
 	}
+	
 	public void map() {
 		this.getInput().stream()
 			.flatMap(line -> Pattern.compile("[\" '\\-]|\\.$|\\. ").splitAsStream(line))
@@ -37,4 +35,6 @@ public class MyMapper extends BasicMapper<String, List<Integer>> {
 			this.emit(k, v);
 		});
 	}
+	
+	public MyMapper(int id) { super(id); }
 }

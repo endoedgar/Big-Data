@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.endoedgar.primitives.KeyValuePair;
 
-public abstract class BasicMapper<I extends Comparable<?>, O> implements Mapper<I, O> {
+public abstract class BasicMapper<I, O> implements Mapper<I, O> {
 	private int id;
 	private List<I> input;
 	private List<KeyValuePair<I, O>> output;

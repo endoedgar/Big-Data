@@ -18,30 +18,6 @@ public class BasicHadoopImplementation<K extends Comparable<K>, V, O> {
 	private List<Mapper<K, V>> mappers;
 	private List<Reducer<K, V, O>> reducers;
 	
-	public int getR() {
-		return r;
-	}
-
-	public void setR(int r) {
-		this.r = r;
-	}
-
-	public int getM() {
-		return m;
-	}
-
-	public void setM(int m) {
-		this.m = m;
-	}
-
-	public BasicHadoopImplementation(int r, int m) {
-		super();
-		this.r = r;
-		this.m = m;
-		this.mappers = new ArrayList<Mapper<K,V>>();
-		this.reducers = new ArrayList<Reducer<K,V,O>>();
-	}
-	
 	public Map<Integer, List<KeyValuePair<K, V>>> shuffleAndSort(List<KeyValuePair<K, V>> mapperOutput) {
 		return mapperOutput.stream()
 		.sorted(Comparator.comparing(KeyValuePair<K,V>::getKey))
@@ -67,9 +43,8 @@ public class BasicHadoopImplementation<K extends Comparable<K>, V, O> {
 			m.map();
 		}
 		
-		// Close each mapper
+		// Close each Mapper
 		// And show the output
-		
 		for(Mapper<K,V> m : this.getMappers()) {
 			m.close();
 			
@@ -109,11 +84,16 @@ public class BasicHadoopImplementation<K extends Comparable<K>, V, O> {
 		}
 	}
 
-	public List<Mapper<K,V>> getMappers() {
-		return mappers;
-	}
+	public List<Mapper<K,V>> getMappers() { return mappers; }
+	public List<Reducer<K,V,O>> getReducers() { return reducers; }
+	public int getR() { return r; }
+	public int getM() { return m; }
 
-	public List<Reducer<K,V,O>> getReducers() {
-		return reducers;
+	public BasicHadoopImplementation(int r, int m) {
+		super();
+		this.r = r;
+		this.m = m;
+		this.mappers = new ArrayList<Mapper<K,V>>();
+		this.reducers = new ArrayList<Reducer<K,V,O>>();
 	}
 }
