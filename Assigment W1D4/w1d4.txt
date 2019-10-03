@@ -299,8 +299,8 @@ Reducer 1 Input
 (cat, [{mat: 1, rat: 2, bat: 3, pat: 1}, {rat: 2, bat: 2, mat: 1}])
 
 Reducer 1 Output
-(bat, [{mat: 2, pat: 2, rat: 2, cat: 1}])
-(cat, [{bat: 5, rat: 4, mat: 2, pat: 1)]}
+(bat, {mat: 2, pat: 2, rat: 2, cat: 1})
+(cat, {bat: 5, rat: 4, mat: 2, pat: 1)}
 
 Reducer 2 Input
 (mat, [{rat: 1, cat: 1}, {pat: 1, bat: 1}])
