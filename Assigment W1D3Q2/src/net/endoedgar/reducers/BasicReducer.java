@@ -8,9 +8,9 @@ import java.util.stream.Stream;
 import net.endoedgar.primitives.GroupByPair;
 import net.endoedgar.primitives.KeyValuePair;
 
-public abstract class BasicReducer<K extends Comparable<K>,V extends Comparable<?>> implements Reducer<K, V> {
+public abstract class BasicReducer<K extends Comparable<K>,V, O> implements Reducer<K, V, O> {
 	private List<GroupByPair<K, V>> input;
-	private List<KeyValuePair<K, V>> output;
+	private List<KeyValuePair<K, O>> output;
 	private int id;
 	
 	public void receiveFromMapper(List<KeyValuePair<K, V>> mapperOutput) {
@@ -45,12 +45,12 @@ public abstract class BasicReducer<K extends Comparable<K>,V extends Comparable<
 	
 	public void initialize() {};
 	public void close() {};
-	public void emit(KeyValuePair<K, V> kv) { output.add(kv); }
-	public void emit(K key, V value) { this.emit(new KeyValuePair<K,V>(key, value)); }
+	public void emit(KeyValuePair<K, O> kv) { output.add(kv); }
+	public void emit(K key, O value) { this.emit(new KeyValuePair<K,O>(key, value)); }
 	public int getId() { return id; }
 	public void setId(int id) { this.id = id; }
 	public List<GroupByPair<K, V>> getInput() { return input; }
 	public void setInput(List<GroupByPair<K, V>> input) { this.input = input; }
-	public List<KeyValuePair<K, V>> getOutput() { return output; }
-	public BasicReducer(int id) { super(); this.input = new ArrayList<GroupByPair<K, V>>(); this.output = new ArrayList<KeyValuePair<K, V>>(); this.id = id; }
+	public List<KeyValuePair<K, O>> getOutput() { return output; }
+	public BasicReducer(int id) { super(); this.input = new ArrayList<GroupByPair<K, V>>(); this.output = new ArrayList<KeyValuePair<K, O>>(); this.id = id; }
 }
