@@ -1,0 +1,313 @@
+Q1
+
+class Mapper
+	method initialize()
+		H = new AssociativeArray
+	method close()
+		for all term e in H do
+			Emit(e, H{e})
+	method Map(docid a, doc d)
+		for all term u in record r do
+			for all term v in Window(u) do
+				if(H{(u,v)} is null)
+					H{(u,v)} = 0
+				H{(u,v)} += 1
+class Reducer
+	method Reduce(Pair(u, v), Integer [c1, c2, …])
+		s = 0
+		for all Integer c in [c1, c2, …] do
+			s = s + c .
+		Emit((u, v), s)
+
+Q2
+
+class Mapper
+	method initialize()
+		Cache = new AssociativeArray
+	method close()
+		for all term h in Cache do
+			Emit(h, Cache{H})
+	method Map(docid a, doc d)
+		for all term u in record r do
+			if(Cache{u} is null)
+				Cache{u} = new AssociativeArray
+			for all term v in Window(u) do
+				if(Cache{u}{v} is null)
+					Cache{u}{v} = 0
+				Cache{u}{v} = Cache{u}{v} + 1
+class Reducer
+	method Reduce(term u, AssociativeArray [H1, H2, …])
+		HFINAL = new AssociativeArray
+		for all stripe H in [H1, H2, …] do
+			HFINAL = HFINAL + H //elementwise addition
+		Emit(u, HFINAL)
+
+Q3
+
+a)
+Input Mapper 1
+[{cat mat rat, cat}, {cat  bat cat pat},{cat bat rat bat}] 
+
+Output Mapper 1
+((cat,mat), 1)
+((cat,rat), 1)
+((mat,rat), 1)
+((mat,cat), 1)
+((rat,cat), 1)
+
+((cat,bat), 1)
+((bat,cat), 1)
+((bat,pat), 1)
+((cat,pat), 1)
+
+((cat,bat), 1)
+((cat,rat), 1)
+((cat,bat), 1)
+((bat,rat), 1)
+((rat,bat), 1)
+
+Input Mapper 2
+[{cat rat bat rat}, {bat mat pat bat}, {pat cat bat mat}]
+
+Output Mapper 2
+
+((cat, rat), 1)
+((cat, bat), 1)
+((cat, rat), 1)
+((rat, bat), 1)
+((bat, rat), 1)
+
+((bat, mat), 1)
+((bat, pat), 1)
+((mat, pat), 1)
+((mat, bat), 1)
+((pat, bat), 1)
+
+((pat, cat), 1)
+((pat, bat), 1)
+((pat, mat), 1)
+((cat, bat), 1)
+((cat, mat), 1)
+((bat, mat), 1)
+
+SS
+
+Reducer 1 Input
+((bat,cat), [1])
+((bat,mat), [1,1])
+((bat,pat), [1,1])
+((bat,rat), [1,1])
+((cat,bat), [1,1,1,1,1])
+((cat,mat), [1,1])
+((cat,pat), [1])
+((cat,rat), [1,1,1,1])
+
+Reducer 1 Output
+((bat,cat), 1)
+((bat,mat), 2)
+((bat,pat), 2)
+((bat,rat), 2)
+((cat,bat), 5)
+((cat,mat), 2)
+((cat,pat), 1)
+((cat,rat), 4)
+
+Reducer 2 Input
+((mat,bat), [1])
+((mat,cat), [1])
+((mat,pat), [1])
+((mat,rat), [1])
+((pat,bat), [1,1])
+((pat,cat), [1])
+((pat,mat), [1])
+((rat,cat), [1])
+((rat,bat), [1,1])
+
+Reducer 2 Output
+((mat,bat), 1)
+((mat,cat), 1)
+((mat,pat), 1)
+((mat,rat), 1)
+((pat,bat), 2)
+((pat,cat), 1)
+((pat,mat), 1)
+((rat,cat), 1)
+((rat,bat), 2)
+
+b)
+Input Mapper 1
+[{cat mat rat, cat}, {cat  bat cat pat},{cat bat rat bat}] 
+
+Output Mapper 1
+((cat,mat), 1)
+((cat,rat), 2)
+((mat,rat), 1)
+((mat,cat), 1)
+((rat,cat), 1)
+
+((cat,bat), 3)
+((bat,cat), 1)
+((bat,pat), 1)
+((cat,pat), 1)
+
+((bat,rat), 1)
+((rat,bat), 1)
+
+Input Mapper 2
+[{cat rat bat rat}, {bat mat pat bat}, {pat cat bat mat}]
+
+Output Mapper 2
+
+((cat, rat), 2)
+((cat, bat), 2)
+((rat, bat), 1)
+((bat, rat), 1)
+
+((bat, mat), 2)
+((bat, pat), 1)
+((mat, pat), 1)
+((mat, bat), 1)
+((pat, bat), 2)
+
+((pat, cat), 1)
+((pat, mat), 1)
+((cat, mat), 1)
+
+SS
+
+Reducer 1 Input
+((bat,cat), [1])
+((bat,mat), [2])
+((bat,pat), [1,1])
+((bat,rat), [1,1])
+((cat,bat), [3,2])
+((cat,mat), [1,1])
+((cat,pat), [1])
+((cat,rat), [2,2])
+
+Reducer 1 Output
+((bat,cat), 1)
+((bat,mat), 2)
+((bat,pat), 2)
+((bat,rat), 2)
+((cat,bat), 5)
+((cat,mat), 2)
+((cat,pat), 1)
+((cat,rat), 4)
+
+Reducer 2 Input
+((mat,bat), [1])
+((mat,cat), [1])
+((mat,pat), [1])
+((mat,rat), [1])
+((pat,bat), [2])
+((pat,cat), [1])
+((pat,mat), [1])
+((rat,cat), [1])
+((rat,bat), [1,1])
+
+Reducer 2 Output
+((mat,bat), 1)
+((mat,cat), 1)
+((mat,pat), 1)
+((mat,rat), 1)
+((pat,bat), 2)
+((pat,cat), 1)
+((pat,mat), 1)
+((rat,cat), 1)
+((rat,bat), 2)
+
+c)
+Input Mapper 1
+[{cat mat rat, cat}, {cat  bat cat pat},{cat bat rat bat}] 
+
+Output Mapper 1
+(cat, {mat: 1, rat: 1})
+(mat, {rat: 1, cat:1})
+(rat, {cat: 1})
+
+(cat, {bat: 1, pat: 1})
+(bat, {cat: 1, pat: 1})
+
+(cat, {bat: 2, rat:1})
+(bat, {rat: 1})
+(rat, {bat: 1})
+
+Input Mapper 2
+[{cat rat bat rat}, {bat mat pat bat}, {pat cat bat mat}]
+
+Output Mapper 2
+
+(cat, {rat: 2, bat: 1})
+(rat, {bat: 1})
+(bat, {rat: 1})
+
+(bat, {mat: 1, pat: 1})
+(mat, {pat: 1, bat: 1})
+(pat, {bat: 1})
+
+(pat, {cat: 1,bat: 1, mat: 1})
+(cat, {bat: 1, mat: 1})
+(bat, {mat: 1})
+
+SS
+
+Reducer 1 Input
+(bat, [{cat: 1, pat: 1}, {rat: 1}, {rat: 1}, {mat: 1, pat: 1}, {mat: 1}])
+(cat, [{mat: 1, rat: 1}, {bat: 1, pat: 1}, {bat: 2, rat: 1}, {rat: 2, bat: 1}, {bat: 1, mat: 1}])
+
+Reducer 1 Output
+(bat, {mat: 2, pat: 2, rat: 2, cat: 1})
+(cat, {bat: 5, rat: 4, mat: 2, pat: 1)}
+
+Reducer 2 Input
+(mat, [{rat: 1, cat: 1}, {pat: 1, bat: 1}])
+(pat, [{bat: 1}, {cat: 1, bat: 1, mat: 1}])
+(rat, [{cat: 1}, {bat: 1}, {bat: 1}])
+
+Reducer 2 Output
+(mat, {bat: 1, cat: 1, pat: 1, rat: 1})
+(pat, {bat: 2, cat: 1, mat: 1})
+(rat, {cat: 1, bat: 2})
+
+d)
+Input Mapper 1
+[{cat mat rat, cat}, {cat  bat cat pat},{cat bat rat bat}] 
+
+Output Mapper 1
+(cat, {mat: 1, rat: 2, bat: 3, pat: 1})
+(mat, {rat: 1, cat:1})
+(rat, {cat: 1, bat: 1})
+
+(bat, {cat: 1, pat: 1, rat: 1})
+
+Input Mapper 2
+[{cat rat bat rat}, {bat mat pat bat}, {pat cat bat mat}]
+
+Output Mapper 2
+(cat, {rat: 2, bat: 2, mat: 1})
+(rat, {bat: 1})
+(bat, {rat: 1, mat: 2, pat: 1})
+
+(mat, {pat: 1, bat: 1})
+(pat, {bat: 2, cat: 1, mat: 1})
+
+SS
+
+Reducer 1 Input
+(bat, [{rat: 1, mat: 2, pat: 1}, {cat: 1, pat: 1, rat: 1}])
+(cat, [{mat: 1, rat: 2, bat: 3, pat: 1}, {rat: 2, bat: 2, mat: 1}])
+
+Reducer 1 Output
+(bat, [{mat: 2, pat: 2, rat: 2, cat: 1}])
+(cat, [{bat: 5, rat: 4, mat: 2, pat: 1)]}
+
+Reducer 2 Input
+(mat, [{rat: 1, cat: 1}, {pat: 1, bat: 1}])
+(pat, [{bat: 2, cat: 1, mat: 1}])
+(rat, [{cat: 1, bat: 1}, {bat: 1}])
+
+Reducer 2 Output
+(mat, {bat: 1, cat: 1, pat: 1, rat: 1})
+(pat, {bat: 2, cat: 1, mat: 1})
+(rat, {cat: 1, bat: 2})
