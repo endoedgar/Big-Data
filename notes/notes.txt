@@ -1,0 +1,30 @@
+To study: O(n) Intersection Algorithm for Three Lists
+
+Mapper
+	method initialize()
+		H = new HashMap
+	method map(docid a, doc r)
+		for each term t in doc
+			H{t} = H{t} = 1
+	method close()
+		for each term t in H
+			emit((t, f), H{t})
+
+Reducer
+	method initialize() 
+		prevKey = null
+		listOfData = new List
+	method reduce(key (t, f), Integer [d1, d2, d3])
+		if(prevKey != null && key != prevKey)
+			
+
+
+10^6
+10^1
+10^0
+		
+a) 10000000
+b) 40000000 + 1
+
+
+40000000 +

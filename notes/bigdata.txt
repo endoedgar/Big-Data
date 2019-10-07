@@ -1,0 +1,20 @@
+class Mapper
+	method inicialize()
+		Sums = new AssociativeArray()
+	method map(docid a, doc d)
+		u = r.getUid()
+		if(Sums{u} is null)
+			Sums{u} = new Tuple(0,0)
+		Sums{u} = new Tuple{Sums{u}.getA()+r.getTime(), Sums{u}.getB()+1}		
+	method close()
+		for all term u in Sums do
+			Emit(u, Sums{u})
+
+class Reducer
+	method reduce(u, Tuple [(s0,c0), (s1,c1), (s2,c2)...])
+		sum = 0
+		count = 0
+		for all tuple (s, c) in [(s0,c0), (s1,c1), (s2,c2)...]) do
+			sum += s
+			count += c
+		Emit(u, sum/count)

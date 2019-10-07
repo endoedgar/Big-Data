@@ -1,0 +1,77 @@
+Cost = Buy
+Price = Sold
+
+Pid 	ProdDesc		Catid 	Price	Cost	numItems
+A19	O.J.			FZFD	5.25	4,90	8
+A95	LIFE OF PI		BOOK	14.95	10.00	25
+A20	SONY TV			ELEC	300	200	1000
+A19	O.J.			FZFD	5.00	4.90	10
+
+A20	SONY TV			ELEC	400	300	500
+A96	GONE WITH THE WIND	BOOK	5.50	5.00	20
+A19	O.J.			FZFD	5.50	5.00	20
+A10	TITANIC			MOVIE	20	10	80
+
+AVG Profit Per Product
+
+class Mapper
+	method map(docid a, doc d) {
+		Emit(Product.pid, new Pair((Product.price-Product.cost)*Product.numItems, Product.numItems))
+	}
+
+class Reducer
+	method reduce(key, Pair [(l1,r1), (l2,r2), …]) {
+		sum = 0
+		count = 0
+		for each pair in [(l1,r1), (l2,r2), …] do
+			sum += pair.left
+			count += pair.right
+		Emit(key, sum/count)
+	}
+
+Illustration
+
+Mapper 0 Input
+(A19, (5.25-4.90)*8, 8)
+(A95, (14.95-10.00)*25, 25)
+
+
+AVG Profit Per Category and All Categories
+class Mapper
+	method initialize() {
+		H = new AssociativeArray()
+	}
+	method map(docid a, doc d) {
+		Pair p = new Pair((Product.price-Product.cost)*Product.numItems, Product.numItems)
+		if(H{Product.cat_id} is null)
+			H{Product.cat_id} = p
+		else
+			H{Product.cat_id} = H{Product.cat_id}+p
+	}
+	method close() {
+		for each entry e in H
+			Emit(e, H{e})
+	}
+
+clas Reducer
+	method initialize() {
+		sumAllItems = 0
+		countAllItems = 0
+	}
+	
+	method reduce(key, Pair [(l1,r1), (l2,r2), …]) {
+		sum = 0
+		count = 0
+		for each pair in [(l1,r1), (l2,r2), …] do
+			sum += pair.left
+			count += pair.right
+		Emit(key, sum/count)
+		sumAllItems += sum
+		countAllItems += count
+	}
+
+	method close() {
+		Emit(0, sumAllItems/countAllItems)
+	}
+
+Illustrate
