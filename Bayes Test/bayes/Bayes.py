@@ -2,18 +2,14 @@ import csv
 import random
 import math
 
-def organizeData(line):
-    #for x in range(len(line)):
-    # latitude, longitude, altitude country
-    a = [float(line[6]), float(line[7]), 1 if (line[3] == 1518152231) else 0]
-    return a
-
 def loadCsv(filename):
     lines = csv.reader(open(filename, "r", encoding="utf8"))
     dataset = list(lines)
-    for i in range(len(dataset)):
-        dataset[i] = organizeData(dataset[i])
-    return dataset
+    groups = list(set(map(lambda x: x[1], dataset[1:])))
+    m = list(map(lambda x: x[2:] + [groups.index(x[1])], dataset[1:]))
+    for i in range(len(m)):
+        m[i] = [float(x) for x in m[i]]
+    return m
 
 
 def splitDataset(dataset, splitRatio):
@@ -103,17 +99,14 @@ def getAccuracy(testSet, predictions):
 
 
 def main():
-    filename = 'airports.csv'
+    filename = 'BreastTissue.csv'
     splitRatio = 0.67
     dataset = loadCsv(filename)
     trainingSet, testSet = splitDataset(dataset, splitRatio)
 
     print('Split '+str(len(dataset))+' rows into train='+str(len(trainingSet))+' and test='+str(len(testSet))+' rows')
-    # prepare model
     summaries = summarizeByClass(trainingSet)
-    # test model
     predictions = getPredictions(summaries, testSet)
-    print(predictions)
     accuracy = getAccuracy(testSet, predictions)
     print('Accuracy: ' + str(accuracy) + '%')
 
