@@ -1,0 +1,17 @@
+cd ~
+mkdir tst
+cd tst
+$HADOOP_PREFIX/bin/hadoop fs -mkdir /user/cloudera /user/cloudera/wordcount /user/cloudera/wordcount/input
+echo "Hadoop is an elephant" > file0
+echo "Hadoop is as yellow as can be" > file1
+echo "Oh what a yellow fellow is Hadoop" > file2
+$HADOOP_PREFIX/bin/hadoop fs -put file* /user/cloudera/wordcount/input 
+$HADOOP_PREFIX/bin/hadoop jar wordCount.jar net.endoedgar.WordCount /user/cloudera/wordcount/input /user/cloudera/wordcount/output
+
+RESTART EVERYTHING
+sed -i '/<configuration>/a    <property>\n        <name>yarn.log-aggregation-enable</name>\n        <value>true</value>\n    </property>' $HADOOP_PREFIX/etc/hadoop/yarn-site.xml
+$HADOOP_PREFIX/sbin/stop-dfs.sh && $HADOOP_PREFIX/sbin/stop-yarn.sh
+$HADOOP_PREFIX/sbin/start-dfs.sh && $HADOOP_PREFIX/sbin/start-yarn.sh
+$HADOOP_PREFIX/sbin/mr-jobhistory-daemon.sh stop historyserver
+$HADOOP_PREFIX/sbin/mr-jobhistory-daemon.sh start historyserver
+
