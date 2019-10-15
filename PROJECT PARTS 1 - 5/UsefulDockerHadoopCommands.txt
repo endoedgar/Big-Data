@@ -1,3 +1,12 @@
+USE DEFREITAS DNS PROXY SERVER FOR HOSTNAME RESOLVING FROM HOST ON LINUX
+docker run --rm --hostname dns.mageddo \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v /etc/resolv.conf:/etc/resolv.conf \
+defreitas/dns-proxy-server
+
+RUNNING THE HADOOP CONTAINER
+docker run -it sequenceiq/hadoop-docker:2.7.0 /etc/bootstrap.sh -bash
+
 cd ~
 mkdir tst
 cd tst
