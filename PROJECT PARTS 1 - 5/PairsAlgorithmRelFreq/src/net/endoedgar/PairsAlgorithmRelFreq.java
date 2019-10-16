@@ -20,10 +20,12 @@ public class PairsAlgorithmRelFreq {
 		job.setMapOutputValueClass(IntWritable.class);
 		
 		job.setOutputKeyClass(TextPairWritable.class);
-		job.setOutputValueClass(IntWritable.class);
+		job.setOutputValueClass(DoubleWritable.class);
 		
 		job.setMapperClass(MyMapper.class);
 		job.setReducerClass(MyReducer.class);
+		job.setPartitionerClass(Partitioner.class);
+	    job.setNumReduceTasks(3);
 		
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);

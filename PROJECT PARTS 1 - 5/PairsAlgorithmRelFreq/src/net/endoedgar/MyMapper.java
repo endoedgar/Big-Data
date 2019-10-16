@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 public class MyMapper extends Mapper<LongWritable, Text, TextPairWritable, IntWritable> {
 	private Logger logger = Logger.getLogger(MyMapper.class);
 	private static final IntWritable one = new IntWritable(1);
+	private static final Text token = new Text("*");
 
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String line = value.toString();
@@ -24,6 +25,7 @@ public class MyMapper extends Mapper<LongWritable, Text, TextPairWritable, IntWr
 					break;
 				logger.info("<("+ tokens[i]+","+tokens[j]+"), 1>");
 				context.write(new TextPairWritable(word, new Text(tokens[j])), one);
+				context.write(new TextPairWritable(word, token), one);
 			}
 		}
 	}
