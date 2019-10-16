@@ -1,0 +1,44 @@
+1) First we supply the input records to a file called FILE
+	echo "B11 C31 D76 A12 B11 C31 D76 C31 A10 B12 D76 C31" > FILE
+	echo "D76 D76 B12 B11 C31 D76 B12 C31 B11 A12 C31 B12" >> FILE
+2) Then we create the following folder structure inside HDFS
+	- user
+		+- cloudera
+			+- pairs
+				+- input
+	using the following hadoop command:
+		hadoop fs -mkdir /user/cloudera /user/cloudera/pairs /user/cloudera/pairs/input
+3) After creating the folder structure, we put the file containing the input records inside the input folder in HDFS using the following command:
+	hadoop fs -put FILE /user/cloudera/pairs/input
+4) After this, we run the Jar using
+	hadoop jar PairsAlgorithmRelFreq.jar net.endoedgar.PairsAlgorithmRelFreq /user/cloudera/pairs/input /user/cloudera/pairs/output
+5) Then we execute the following command to show the output of the reducer:
+	hadoop fs -cat /user/cloudera/pairs/output/*
+6) It should display:
+	(A10, B12)	1
+	(A10, C31)	1
+	(A10, D76)	1
+	(A12, A10)	1
+	(A12, B11)	1
+	(A12, B12)	2
+	(A12, C31)	4
+	(A12, D76)	2
+	(B11, A10)	1
+	(B11, A12)	2
+	(B11, B12)	3
+	(B11, C31)	7
+	(B11, D76)	4
+	(B12, A12)	1
+	(B12, B11)	2
+	(B12, C31)	4
+	(B12, D76)	2
+	(C31, A10)	1
+	(C31, A12)	2
+	(C31, B11)	2
+	(C31, B12)	3
+	(C31, D76)	4
+	(D76, A10)	1
+	(D76, A12)	2
+	(D76, B11)	3
+	(D76, B12)	4
+	(D76, C31)	6
