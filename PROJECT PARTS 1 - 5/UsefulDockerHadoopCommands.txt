@@ -10,7 +10,9 @@ docker run -it sequenceiq/hadoop-docker:2.7.0 /etc/bootstrap.sh -bash
 cd ~
 mkdir tst
 cd tst
-$HADOOP_PREFIX/bin/hadoop fs -mkdir /user/cloudera /user/cloudera/wordcount /user/cloudera/wordcount/input
+$HADOOP_PREFIX/bin/hadoop fs -mkdir /user/cloudera /user/cloudera/pairs /user/cloudera/pairs/input
+echo "B11 C31 D76 A12 B11 C31 D76 C31 A10 B12 D76 C31" > file
+echo "D76 D76 B12 B11 C31 D76 B12 C31 B11 A12 C31 B12" >> file
 echo "Hadoop is an elephant" > file0
 echo "Hadoop is as yellow as can be" > file1
 echo "Oh what a yellow fellow is Hadoop" > file2
