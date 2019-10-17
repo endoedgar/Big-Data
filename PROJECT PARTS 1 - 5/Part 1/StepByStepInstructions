@@ -1,0 +1,82 @@
+Steps to setup a single node cluster using Docker on Linux Mint.
+1) Install Docker Package on Linux Mint
+Source: https://docs.docker.com/install/linux/docker-ce/ubuntu/
+	a) Update repository package list (every command that starts with # requires superuser privileges):
+		# apt-get update
+	b) Install packages to allow apt to use a repository over HTTPS:
+		# apt-get install \
+		    apt-transport-https \
+		    ca-certificates \
+		    curl \
+		    gnupg-agent \
+		    software-properties-common
+	c) Add Docker’s official GPG key:
+		# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+	d) Add repository for my architecture (x64) using the following command:
+		# add-apt-repository \
+		   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+		   $(lsb_release -cs) \
+		   stable"
+	e) Update the repository package list again:
+		# apt-get update
+	f) Install latest version of Docker Engine - Community:
+		# apt-get install docker-ce docker-ce-cli containerd.io
+2) Run and Setup Docker container
+	a) Execute the following command to start a Docker container that resolves Docker Container hostnames on our host machine:
+		# docker run -d --rm --hostname dns.mageddo \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v /etc/resolv.conf:/etc/resolv.conf \
+		defreitas/dns-proxy-server
+	b) Then execute the following command to start a Hadoop Docker Container and keep the terminal window dedicated to the Docker Container:
+		# docker run -it sequenceiq/hadoop-docker:2.7.0 /etc/bootstrap.sh -bash
+	c) Inside that Container Terminal, type the following commands, they enable Logs for finished MapReduce jobs (very useful for debugging):
+		# sed -i '/<configuration>/a    <property>\n        <name>yarn.log-aggregation-enable</name>\n        <value>true</value>\n    </property>' $HADOOP_PREFIX/etc/hadoop/yarn-site.xml
+		# $HADOOP_PREFIX/sbin/stop-dfs.sh && $HADOOP_PREFIX/sbin/stop-yarn.sh
+		# $HADOOP_PREFIX/sbin/start-dfs.sh && $HADOOP_PREFIX/sbin/start-yarn.sh
+		# $HADOOP_PREFIX/sbin/mr-jobhistory-daemon.sh stop historyserver
+		# $HADOOP_PREFIX/sbin/mr-jobhistory-daemon.sh start historyserver
+	d) Open another terminal and find the Hadoop Docker Container ID using the command "sudo docker ps" (in the case below it is 33f4b5d2678e):
+		CONTAINER ID        IMAGE                            COMMAND                  CREATED             STATUS              PORTS                                                                                                                                NAMES
+		fc2457a84c6f        defreitas/dns-proxy-server       "/app/dns-proxy-serv…"   8 seconds ago       Up 6 seconds                                                                                                                                             peaceful_benz
+		33f4b5d2678e        sequenceiq/hadoop-docker:2.7.0   "/etc/bootstrap.sh -…"   15 hours ago        Up 15 hours         2122/tcp, 8030-8033/tcp, 8040/tcp, 8042/tcp, 8088/tcp, 19888/tcp, 49707/tcp, 50010/tcp, 50020/tcp, 50070/tcp, 50075/tcp, 50090/tcp   gifted_einstein
+	e) Keep a note of this Container ID (We are going to refer to it from now on as DOCKER_HADDOP_CONTAINER_ID)
+3) Create Hadoop Distributed Filesystem Folder Structure for WordCount project
+	a) Inside the Hadoop Docker Container, create the folder structure using the following commands:
+		# $HADOOP_PREFIX/bin/hadoop fs -mkdir /user/cloudera /user/cloudera/wordcount /user/cloudera/wordcount/input
+		Obs: Don't create the output folder because it will be created automatically once our JAR file is executed.
+	b) Still inside the container, type the following commands to create 3 test files which will be used as input files on Hadoop:
+		$ echo "Hadoop is an elephant" > file0
+		$ echo "Hadoop is as yellow as can be" > file1
+		$ echo "Oh what a yellow fellow is Hadoop" > file2
+	c) Upload those files to the HDFS using the following command inside the container:
+		# $HADOOP_PREFIX/bin/hadoop fs -put file* /user/cloudera/wordcount/input 
+4) Setup WordCount on Eclipse
+	a) Open Eclipse
+	b) Create a new Maven Project (Artifact ID: WordCount)
+	c) After creating your project, make sure your JRE System Library is set to JavaSE-1.7 (You can do that Right Clicking JRE System Library just below your project name folder on Eclipse and selecting properties)
+	d) Add the following dependencies on your pom.xml file
+	  	<dependency>
+  			<groupId>org.apache.hadoop</groupId>
+  			<artifactId>hadoop-common</artifactId>
+  			<version>2.7.3</version>
+  		</dependency>
+  		<dependency>
+  			<groupId>org.apache.hadoop</groupId>
+  			<artifactId>hadoop-mapreduce-client-core</artifactId>
+  			<version>2.7.3</version>
+  		</dependency>
+	e) Copy the WordCount example from https://docs.cloudera.com/documentation/other/tutorial/CDH5/topics/ht_wordcount1_source.html
+	f) Make sure you remember the package name where that source code is placed.
+	g) Export the Jar File somewhere you can access using File > Export option on Eclipse. We are going to refer to that location as JAR_FILE_LOCATION_ON_HOST
+5) Test Run Project
+	a) Open a new Terminal on your Host Machine
+	b) Type the following command to upload the Jar file to the Hadoop Docker Container:
+		# docker cp JAR_FILE_LOCATION_ON_HOST DOCKER_HADDOP_CONTAINER_ID:/root
+		Obs: This commands copy the Jar file to the root user folder inside the container.
+	c) Inside the Hadoop Docker Container Terminal type the following command to execute a MapReduce Job using our Jar File:
+		# $HADOOP_PREFIX/bin/hadoop jar /root/JAR_FILENAME PACKAGE_NAME.WordCount /user/cloudera/wordcount/input /user/cloudera/wordcount/output
+		Obs: Make sure that your Package Name is correcly informed, and also make sure that every single filepath is respecting the uppercase and lowercase of its characters.
+	d) After executing the Jar successfully, use the following command to get the output from our MapReduce Job:
+		# $HADOOP_PREFIX/bin/hadoop fs -cat /user/cloudera/wordcount/output/*
+	e) If you want to run the same MapReduce job again, you have to delete the output folder created by the Jar execution step using the following command:
+		# $HADOOP_PREFIX/bin/hadoop fs -rm -r /user/cloudera/wordcount/output
