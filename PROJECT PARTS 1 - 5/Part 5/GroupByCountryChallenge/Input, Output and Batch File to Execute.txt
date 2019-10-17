@@ -1,0 +1,33 @@
+This MapReduce problem solves the counting of a list of people grouping them by
+Country and Sex.
+
+1) First we supply the input records to a file called FILE
+	echo "1	Alfred	M	Germany" > FILE
+	echo "2	Ana	F	Mexico" >> FILE
+	echo "3	Antonio	M	Mexico" >> FILE
+	echo "4	Around	M	UK" >> FILE
+	echo "5	Berglunds	M	Sweden" >> FILE
+	echo "6	Catarina	F	Russia" >> FILE
+	echo "7	Joseph	M	Sweden" >> FILE
+	echo "8	Robert	M	Sweden" >> FILE
+	echo "9	Murphy	M	UK" >> FILE
+2) Then we create the following folder structure inside HDFS
+	- user
+		+- cloudera
+			+- challenge
+				+- input
+	using the following hadoop command:
+		hadoop fs -mkdir /user/cloudera /user/cloudera/challenge /user/cloudera/challenge/input
+3) After creating the folder structure, we put the file containing the input records inside the input folder in HDFS using the following command:
+	hadoop fs -put FILE /user/cloudera/challenge/input
+4) After this, we run the Jar using
+	hadoop jar PairsMapperStripesReducerAlgorithmRelFreq.jar net.endoedgar.PairsMapperStripesReducerAlgorithmRelFreq /user/cloudera/hybrid/input /user/cloudera/hybrid/output
+5) Then we execute the following command to show the output of the reducer:
+	hadoop fs -cat /user/cloudera/challenge/output/*
+6) It should display:
+Germany	{M = 1}
+Mexico	{F = 1}{M = 1}
+Russia	{F = 1}
+Sweden	{M = 3}
+UK	{M = 2}
+
