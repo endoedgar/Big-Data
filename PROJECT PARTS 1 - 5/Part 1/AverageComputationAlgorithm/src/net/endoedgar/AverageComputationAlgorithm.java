@@ -16,6 +16,8 @@ public class AverageComputationAlgorithm {
 		Job job = new Job(conf, AverageComputationAlgorithm.class.getName());
 		job.setJarByClass(AverageComputationAlgorithm.class);
 		
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(IntWritable.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(DoubleWritable.class);
 		
