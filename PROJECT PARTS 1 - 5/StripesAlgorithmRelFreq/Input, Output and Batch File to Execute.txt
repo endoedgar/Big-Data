@@ -1,0 +1,24 @@
+1) First we supply the input records to a file called FILE
+	echo "B11 C31 D76 A12 B11 C31 D76 C31 A10 B12 D76 C31" > FILE
+	echo "D76 D76 B12 B11 C31 D76 B12 C31 B11 A12 C31 B12" >> FILE
+2) Then we create the following folder structure inside HDFS
+	- user
+		+- cloudera
+			+- stripes
+				+- input
+	using the following hadoop command:
+		hadoop fs -mkdir /user/cloudera /user/cloudera/stripes /user/cloudera/stripes/input
+3) After creating the folder structure, we put the file containing the input records inside the input folder in HDFS using the following command:
+	hadoop fs -put FILE /user/cloudera/stripes/input
+4) After this, we run the Jar using
+	hadoop jar StripesAlgorithmRelFreq.jar net.endoedgar.StripesAlgorithmRelFreq /user/cloudera/stripes/input /user/cloudera/stripes/output
+5) Then we execute the following command to show the output of the reducer:
+	hadoop fs -cat /user/cloudera/stripes/output/*
+6) It should display:
+A10	{B12 = 0.3333333333333333}{D76 = 0.3333333333333333}{C31 = 0.3333333333333333}
+A12	{A10 = 0.1}{B12 = 0.2}{B11 = 0.1}{D76 = 0.2}{C31 = 0.4}
+B11	{A12 = 0.11764705882352941}{A10 = 0.058823529411764705}{B12 = 0.17647058823529413}{D76 = 0.23529411764705882}{C31 = 0.4117647058823529}
+B12	{A12 = 0.1111111111111111}{B11 = 0.2222222222222222}{D76 = 0.2222222222222222}{C31 = 0.4444444444444444}
+C31	{A12 = 0.16666666666666666}{A10 = 0.08333333333333333}{B12 = 0.25}{B11 = 0.16666666666666666}{D76 = 0.3333333333333333}
+D76	{A12 = 0.125}{A10 = 0.0625}{B12 = 0.25}{B11 = 0.1875}{C31 = 0.375}
+
