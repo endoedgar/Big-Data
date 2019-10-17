@@ -17,7 +17,7 @@ public class AverageComputationAlgorithm {
 		job.setJarByClass(AverageComputationAlgorithm.class);
 		
 		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(IntWritable.class);
+		job.setOutputValueClass(DoubleWritable.class);
 		
 		job.setMapperClass(MyMapper.class);
 		job.setReducerClass(MyReducer.class);
