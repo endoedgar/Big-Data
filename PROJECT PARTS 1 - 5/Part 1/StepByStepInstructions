@@ -72,10 +72,10 @@ Source: https://docs.docker.com/install/linux/docker-ce/ubuntu/
 	a) Open a new Terminal on your Host Machine
 	b) Type the following command to upload the Jar file to the Hadoop Docker Container:
 		# docker cp JAR_FILE_LOCATION_ON_HOST DOCKER_HADDOP_CONTAINER_ID:/root
-		Obs: This commands copy the Jar file to the root user folder inside the container.
+		Obs: This command copies the Jar file to the root user folder inside the container.
 	c) Inside the Hadoop Docker Container Terminal type the following command to execute a MapReduce Job using our Jar File:
 		# $HADOOP_PREFIX/bin/hadoop jar /root/JAR_FILENAME PACKAGE_NAME.WordCount /user/cloudera/wordcount/input /user/cloudera/wordcount/output
-		Obs: Make sure that your Package Name is correcly informed, and also make sure that every single filepath is respecting the uppercase and lowercase of its characters.
+		Obs: Make sure that your Package Name is correctly informed, and also make sure that every single filepath is respecting the case of its characters.
 	d) After executing the Jar successfully, use the following command to get the output from our MapReduce Job:
 		# $HADOOP_PREFIX/bin/hadoop fs -cat /user/cloudera/wordcount/output/*
 	e) If you want to run the same MapReduce job again, you have to delete the output folder created by the Jar execution step using the following command:
